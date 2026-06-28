@@ -1,0 +1,39 @@
+{
+  "人物": [
+    {"code": "child_boy", "label": "小男孩", "emoji": "👦"},
+    {"code": "child_girl", "label": "小女孩", "emoji": "👧"},
+    {"code": "teen_boy", "label": "少年", "emoji": "🧑"},
+    {"code": "teen_girl", "label": "少女", "emoji": "👩"},
+    {"code": "man", "label": "成年男性", "emoji": "👨"},
+    {"code": "woman", "label": "成年女性", "emoji": "👩"},
+    {"code": "elder_man", "label": "老年男性", "emoji": "👴"},
+    {"code": "elder_woman", "label": "老年女性", "emoji": "👵"},
+    {"code": "baby", "label": "婴儿", "emoji": "👶"}
+  ],
+  "动物": [
+    {"code": "cat", "label": "猫", "emoji": "🐱"},
+    {"code": "dog", "label": "狗", "emoji": "🐶"},
+    {"code": "rabbit", "label": "兔子", "emoji": "🐰"},
+    {"code": "bird", "label": "鸟", "emoji": "🐦"},
+    {"code": "fox", "label": "狐狸", "emoji": "🦊"},
+    {"code": "deer", "label": "鹿", "emoji": "🦌"},
+    {"code": "horse", "label": "马", "emoji": "🐴"},
+    {"code": "tiger", "label": "老虎", "emoji": "🐯"},
+    {"code": "wolf", "label": "狼", "emoji": "🐺"},
+    {"code": "panda", "label": "熊猫", "emoji": "🐼"},
+    {"code": "dragon", "label": "龙", "emoji": "🐉"},
+    {"code": "phoenix", "label": "凤凰", "emoji": "🔥"}
+  ],
+  "物体": [
+    {"code": "car", "label": "汽车", "emoji": "🚗"},
+    {"code": "building", "label": "建筑", "emoji": "🏛️"},
+    {"code": "flower", "label": "花朵", "emoji": "🌸"},
+    {"code": "book", "label": "书", "emoji": "📖"},
+    {"code": "cup", "label": "杯子", "emoji": "☕"},
+    {"code": "sword", "label": "剑", "emoji": "🗡️"},
+    {"code": "lantern", "label": "灯笼", "emoji": "🏮"},
+    {"code": "tree", "label": "树", "emoji": "🌳"},
+    {"code": "moon", "label": "月亮", "emoji": "🌙"},
+    {"code": "star", "label": "星星", "emoji": "⭐"}
+  ]
+}

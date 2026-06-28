@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #FAFAF7;
+  --color-bg-elev-1: #FFFFFF;
+  --color-bg-elev-2: #F2F1EC;
+  --color-bg-soft: #F7F6F1;
+  --color-line: #E8E5DC;
+  --color-line-strong: #D2CEC1;
+  --color-ink-1: #1A1A1A;
+  --color-ink-2: #4A4A4A;
+  --color-ink-3: #8A8A86;
+  --color-ink-4: #B8B5AC;
+  --color-brand: #5B6CFF;
+  --color-brand-soft: #EEF0FF;
+  --color-brand-ink: #2B36B2;
+  --color-brand-2: #FF7A59;
+  --color-brand-2-soft: #FFEDE6;
+  --color-success: #2B8A57;
+  --color-success-soft: #E5F5EC;
+  --color-warn: #C77F02;
+  --color-warn-soft: #FFF6E0;
+  --color-danger: #C92A2A;
+  --color-danger-soft: #FDE8E8;
+
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink-1);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* { box-sizing: border-box; }
+
+/* 自定义滚动条 */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-line-strong); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-ink-3); }

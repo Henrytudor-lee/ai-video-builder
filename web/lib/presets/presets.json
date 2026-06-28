@@ -1,0 +1,636 @@
+[
+  {
+    "name": "吉卜力治愈系 - 小男孩喝水",
+    "description": "午后日式卧室，一个 8 岁小男孩坐在椅子上喝水",
+    "subject": {
+      "type": "child_boy",
+      "number": 1,
+      "description": "brown short hair, wearing a loose oversized t-shirt and cartoon shorts"
+    },
+    "scene": {
+      "location": "Japanese-style bedroom, tatami corner, low wooden bookshelf with toys and books, anime posters on wall",
+      "time": "afternoon",
+      "weather": "sunny",
+      "details": "soft warm afternoon sunlight streams through a half-open window, gentle dust motes floating in the light",
+      "light_dir": "soft light from window"
+    },
+    "action": {
+      "timeline": [
+        {
+          "time": "0-2s",
+          "action": "sits relaxed on a wooden chair"
+        },
+        {
+          "time": "3-4s",
+          "action": "picks up a glass of water with both hands, takes a slow sip"
+        },
+        {
+          "time": "5-6s",
+          "action": "swallows and exhales softly with a calm, peaceful expression"
+        }
+      ],
+      "expression": "calm and peaceful"
+    },
+    "camera": {
+      "shot": "medium shot",
+      "movement": "fixed camera, no movement",
+      "angle": "eye-level",
+      "focal": "telephoto lens",
+      "depth": "shallow depth of field, blurred background"
+    },
+    "style": {
+      "anchors": [
+        "Studio Ghibli style",
+        "hand-drawn anime",
+        "Hayao Miyazaki aesthetic"
+      ],
+      "tone": "warm color palette",
+      "saturation": "low saturation",
+      "lighting": "soft natural light",
+      "moods": [
+        "warm",
+        "healing",
+        "peaceful"
+      ]
+    },
+    "motion": [
+      {
+        "code": "固定",
+        "group": 0
+      }
+    ],
+    "extra": "slice-of-life anime mood, quiet heartwarming atmosphere",
+    "duration": 6,
+    "resolution": "768P"
+  },
+  {
+    "name": "赛博朋克 - 雨夜追逐",
+    "description": "深夜赛博朋克街道，黑衣男子奔跑",
+    "subject": {
+      "type": "man",
+      "number": 1,
+      "description": "wearing a long black trench coat and tactical goggles, determined expression"
+    },
+    "scene": {
+      "location": "cyberpunk city street",
+      "time": "at midnight",
+      "weather": "rainy",
+      "details": "wet pavement reflecting neon signs, floating holographic advertisements, dense fog, towering buildings",
+      "light_dir": "neon backlight and side light"
+    },
+    "action": {
+      "timeline": [
+        {
+          "time": "0-2s",
+          "action": "runs in from the street corner, splashing water on the ground"
+        },
+        {
+          "time": "3-4s",
+          "action": "suddenly stops and turns around sharply"
+        },
+        {
+          "time": "5-6s",
+          "action": "looks up at a flickering neon sign, eyes squinting"
+        }
+      ],
+      "expression": "tense and alert"
+    },
+    "camera": {
+      "shot": "medium full shot",
+      "movement": "tracking shot follows",
+      "angle": "low angle looking up",
+      "focal": "wide angle",
+      "depth": "medium depth of field"
+    },
+    "style": {
+      "anchors": [
+        "Blade Runner 2049 cinematography",
+        "cyberpunk aesthetic"
+      ],
+      "tone": "teal and orange color grade",
+      "saturation": "high saturation",
+      "lighting": "neon volumetric light, rain-soaked reflections",
+      "moods": [
+        "tense",
+        "lonely",
+        "mysterious_dark"
+      ]
+    },
+    "motion": [
+      {
+        "code": "跟拍",
+        "group": 0
+      },
+      {
+        "code": "推进",
+        "group": 1
+      }
+    ],
+    "extra": "",
+    "duration": 6,
+    "resolution": "768P"
+  },
+  {
+    "name": "中国水墨 - 剑客出山",
+    "description": "黄山云海，白袍剑客抽剑",
+    "subject": {
+      "type": "man",
+      "number": 1,
+      "description": "white robe, hair tied in a topknot, holding a long sword, dignified bearing"
+    },
+    "scene": {
+      "location": "Yellow Mountain with sea of clouds, distant peaks, pine trees",
+      "time": "at dawn",
+      "weather": "foggy",
+      "details": "clouds rolling below the mountain peak, ancient pines in silhouette",
+      "light_dir": "backlit by rising sun"
+    },
+    "action": {
+      "timeline": [
+        {
+          "time": "0-3s",
+          "action": "stands with back to camera, looking out at the sea of clouds"
+        },
+        {
+          "time": "4-6s",
+          "action": "slowly draws the sword, blade glints in the sunlight"
+        },
+        {
+          "time": "7-10s",
+          "action": "turns slowly toward camera, sword tip pointing forward"
+        }
+      ],
+      "expression": "calm and resolute"
+    },
+    "camera": {
+      "shot": "wide shot to medium shot",
+      "movement": "slowly pushes in",
+      "angle": "eye-level",
+      "focal": "standard 50mm",
+      "depth": "deep depth of field"
+    },
+    "style": {
+      "anchors": [
+        "Chinese ink painting style",
+        "shuimo, calligraphy brushwork, white space aesthetics"
+      ],
+      "tone": "monochrome ink black and white",
+      "saturation": "muted, desaturated",
+      "lighting": "soft natural backlight, misty",
+      "moods": [
+        "serene",
+        "heroic",
+        "ethereal"
+      ]
+    },
+    "motion": [
+      {
+        "code": "推进",
+        "group": 0
+      }
+    ],
+    "extra": "wuxia film aesthetic, poetic atmosphere",
+    "duration": 10,
+    "resolution": "768P"
+  },
+  {
+    "name": "新海诚 - 樱花站台",
+    "description": "樱花纷飞的车站，少女回眸",
+    "subject": {
+      "type": "teen_girl",
+      "number": 1,
+      "description": "school uniform, white shirt and navy pleated skirt, long flowing hair, gentle expression"
+    },
+    "scene": {
+      "location": "Japanese suburban train station platform",
+      "time": "in the late afternoon",
+      "weather": "sunny",
+      "details": "cherry blossom petals falling everywhere, train in the background, golden light",
+      "light_dir": "warm backlight from low sun"
+    },
+    "action": {
+      "timeline": [
+        {
+          "time": "0-2s",
+          "action": "stands at the platform looking at the approaching train"
+        },
+        {
+          "time": "3-4s",
+          "action": "wind blows her hair, cherry petals swirl around her"
+        },
+        {
+          "time": "5-6s",
+          "action": "turns to look back over her shoulder, soft smile"
+        }
+      ],
+      "expression": "gentle and slightly wistful"
+    },
+    "camera": {
+      "shot": "medium shot",
+      "movement": "slowly pushes in",
+      "angle": "eye-level",
+      "focal": "telephoto lens",
+      "depth": "shallow depth of field with beautiful bokeh"
+    },
+    "style": {
+      "anchors": [
+        "Makoto Shinkai style",
+        "vibrant anime skies",
+        "photorealistic anime"
+      ],
+      "tone": "warm pink and gold",
+      "saturation": "high saturation",
+      "lighting": "golden hour backlight, lens flare",
+      "moods": [
+        "romantic",
+        "dreamy",
+        "nostalgic"
+      ]
+    },
+    "motion": [
+      {
+        "code": "推进",
+        "group": 0
+      }
+    ],
+    "extra": "lens flare, atmospheric light, hyper-detailed anime",
+    "duration": 6,
+    "resolution": "768P"
+  },
+  {
+    "name": "电影写实 - 咖啡馆沉思",
+    "description": "巴黎咖啡馆，女子独自坐着看窗外",
+    "subject": {
+      "type": "woman",
+      "number": 1,
+      "description": "wearing a beige coat, dark hair tied back, pensive look"
+    },
+    "scene": {
+      "location": "Parisian sidewalk cafe with bistro chairs and round tables",
+      "time": "in the late afternoon",
+      "weather": "overcast",
+      "details": "cobblestone street, outdoor cafe, pedestrians walking by, a cup of espresso on the table",
+      "light_dir": "soft diffused window light"
+    },
+    "action": {
+      "timeline": [
+        {
+          "time": "0-3s",
+          "action": "sits at the table, looks down at the coffee cup"
+        },
+        {
+          "time": "4-6s",
+          "action": "raises her head and looks out the window, distant gaze"
+        }
+      ],
+      "expression": "thoughtful and introspective"
+    },
+    "camera": {
+      "shot": "medium close-up",
+      "movement": "fixed camera",
+      "angle": "eye-level through the window",
+      "focal": "85mm portrait lens",
+      "depth": "shallow depth of field, beautiful bokeh"
+    },
+    "style": {
+      "anchors": [
+        "cinematic photorealistic",
+        "Wes Anderson color palette"
+      ],
+      "tone": "warm earthy palette, pastel beige and pink",
+      "saturation": "low saturation",
+      "lighting": "soft window light, golden afternoon",
+      "moods": [
+        "nostalgic",
+        "romantic",
+        "serene"
+      ]
+    },
+    "motion": [
+      {
+        "code": "固定",
+        "group": 0
+      }
+    ],
+    "extra": "shot on ARRI Alexa, cinematic grain, anamorphic",
+    "duration": 6,
+    "resolution": "1080P"
+  },
+  {
+    "name": "8-bit 像素 - 勇者出村",
+    "description": "像素风 RPG 主角走出村庄",
+    "subject": {
+      "type": "teen_boy",
+      "number": 1,
+      "description": "pixel art hero, blue tunic, brown boots, sword on back"
+    },
+    "scene": {
+      "location": "pixel art RPG village with thatched-roof houses and dirt path",
+      "time": "at noon",
+      "weather": "sunny",
+      "details": "small houses, a windmill in the distance, green pixel trees, blue pixel sky",
+      "light_dir": "top-down pixel lighting"
+    },
+    "action": {
+      "timeline": [
+        {
+          "time": "0-2s",
+          "action": "stands at the village gate"
+        },
+        {
+          "time": "3-4s",
+          "action": "looks back at the village with a determined nod"
+        },
+        {
+          "time": "5-6s",
+          "action": "walks forward onto the path, camera following from behind"
+        }
+      ],
+      "expression": "determined and brave"
+    },
+    "camera": {
+      "shot": "wide shot",
+      "movement": "fixed camera",
+      "angle": "slight high angle",
+      "focal": "isometric pixel perspective",
+      "depth": "all elements in focus"
+    },
+    "style": {
+      "anchors": [
+        "16-bit pixel art",
+        "retro JRPG aesthetic",
+        "SNES era graphics"
+      ],
+      "tone": "vibrant pixel colors",
+      "saturation": "vivid saturation",
+      "lighting": "flat pixel lighting",
+      "moods": [
+        "nostalgic",
+        "heroic",
+        "playful"
+      ]
+    },
+    "motion": [
+      {
+        "code": "固定",
+        "group": 0
+      }
+    ],
+    "extra": "8-bit chiptune soundtrack era visual style",
+    "duration": 6,
+    "resolution": "768P"
+  },
+  {
+    "name": "蒸汽朋克 - 机械巨龙",
+    "description": "蒸汽朋克工厂区，机械巨龙走出废墟",
+    "subject": {
+      "type": "dragon",
+      "number": 1,
+      "description": "giant mechanical dragon made of brass and steel, glowing red eyes, steam venting from joints"
+    },
+    "scene": {
+      "location": "Victorian-era abandoned factory with broken brick walls and rusted gears",
+      "time": "at dusk",
+      "weather": "foggy",
+      "details": "scattered machinery, broken windows, smoke rising from stacks, lantern light",
+      "light_dir": "warm lantern and fire light from below"
+    },
+    "action": {
+      "timeline": [
+        {
+          "time": "0-3s",
+          "action": "the factory wall explodes outward, dust and debris flying"
+        },
+        {
+          "time": "4-6s",
+          "action": "the massive mechanical dragon emerges from the smoke, head rising up"
+        },
+        {
+          "time": "7-10s",
+          "action": "dragon's eyes glow red, steam hisses from its jaws, it roars silently"
+        }
+      ],
+      "expression": "menacing and powerful"
+    },
+    "camera": {
+      "shot": "extreme wide to medium shot",
+      "movement": "slowly pulls out",
+      "angle": "low angle looking up",
+      "focal": "wide angle 24mm",
+      "depth": "deep depth of field"
+    },
+    "style": {
+      "anchors": [
+        "steampunk aesthetic",
+        "industrial revolution machinery"
+      ],
+      "tone": "warm brass and rust tones, with red glow accents",
+      "saturation": "medium saturation",
+      "lighting": "dramatic warm firelight, volumetric smoke",
+      "moods": [
+        "epic",
+        "tense",
+        "dramatic"
+      ]
+    },
+    "motion": [
+      {
+        "code": "拉远",
+        "group": 0
+      }
+    ],
+    "extra": "movie-quality VFX, smoke and fire particles",
+    "duration": 10,
+    "resolution": "1080P"
+  },
+  {
+    "name": "梦境超现实 - 漂浮的岛屿",
+    "description": "超现实梦境，浮空岛瀑布",
+    "subject": {
+      "type": "teen_girl",
+      "number": 1,
+      "description": "flowing white dress, barefoot, long hair drifting in the wind"
+    },
+    "scene": {
+      "location": "floating island in the sky with waterfalls pouring into the clouds below",
+      "time": "at dusk",
+      "weather": "sunny",
+      "details": "lush green grass, scattered flowers, distant floating islands, golden-pink sky, soft clouds",
+      "light_dir": "warm golden backlight from setting sun"
+    },
+    "action": {
+      "timeline": [
+        {
+          "time": "0-3s",
+          "action": "stands on the edge of the floating island, hair and dress flowing in the wind"
+        },
+        {
+          "time": "4-6s",
+          "action": "slowly turns to face the camera with arms slightly spread"
+        },
+        {
+          "time": "7-10s",
+          "action": "closes eyes peacefully, wind carries flower petals around her"
+        }
+      ],
+      "expression": "peaceful and transcendent"
+    },
+    "camera": {
+      "shot": "wide shot",
+      "movement": "slowly pushes in",
+      "angle": "eye-level",
+      "focal": "standard 50mm",
+      "depth": "deep depth of field with soft bokeh on clouds"
+    },
+    "style": {
+      "anchors": [
+        "surreal dreamscape",
+        "magical realism"
+      ],
+      "tone": "warm pastel pink and gold",
+      "saturation": "vivid but soft",
+      "lighting": "soft golden hour light, god rays through clouds",
+      "moods": [
+        "dreamy",
+        "ethereal",
+        "romantic"
+      ]
+    },
+    "motion": [
+      {
+        "code": "推进",
+        "group": 0
+      }
+    ],
+    "extra": "Studio Ghibli meets Salvador Dali aesthetic",
+    "duration": 10,
+    "resolution": "768P"
+  },
+  {
+    "name": "敦煌飞天 - 反弹琵琶",
+    "description": "敦煌壁画风格，飞天女神反弹琵琶",
+    "subject": {
+      "type": "woman",
+      "number": 1,
+      "description": "celestial flying apsara, flowing silk ribbons, ornate jewelry, holding pipa (Chinese lute) behind her back"
+    },
+    "scene": {
+      "location": "Dunhuang cave temple, painted murals covering the walls",
+      "time": "at dusk",
+      "weather": "",
+      "details": "mineral pigment murals, lotus patterns, golden clouds painted in traditional style",
+      "light_dir": "soft warm lantern light"
+    },
+    "action": {
+      "timeline": [
+        {
+          "time": "0-3s",
+          "action": "apsara floats in mid-air, silk ribbons flowing around her"
+        },
+        {
+          "time": "4-6s",
+          "action": "plays pipa held behind her back, fingers plucking the strings"
+        },
+        {
+          "time": "7-10s",
+          "action": "ribbons swirl and form a lotus shape around her"
+        }
+      ],
+      "expression": "serene smile, eyes half-closed in music"
+    },
+    "camera": {
+      "shot": "medium full shot",
+      "movement": "slowly orbits around",
+      "angle": "eye-level, looking up slightly",
+      "focal": "standard 50mm",
+      "depth": "medium depth of field"
+    },
+    "style": {
+      "anchors": [
+        "Dunhuang mural style",
+        "traditional Chinese mineral pigment painting",
+        "Tang dynasty aesthetic"
+      ],
+      "tone": "warm earthy gold, red, and green tones",
+      "saturation": "muted earthy saturation",
+      "lighting": "soft warm temple light",
+      "moods": [
+        "sacred",
+        "serene",
+        "ethereal"
+      ]
+    },
+    "motion": [
+      {
+        "code": "跟随",
+        "group": 0
+      }
+    ],
+    "extra": "Tang dynasty flying apsara aesthetic, traditional Chinese painting",
+    "duration": 10,
+    "resolution": "768P"
+  },
+  {
+    "name": "末日废土 - 孤独幸存者",
+    "description": "末日城市废墟，戴面罩幸存者独行",
+    "subject": {
+      "type": "man",
+      "number": 1,
+      "description": "wearing a gas mask, tattered brown leather coat, carrying a metal pipe"
+    },
+    "scene": {
+      "location": "abandoned post-apocalyptic city, rubble-strewn streets, broken skyscrapers",
+      "time": "at dusk",
+      "weather": "dusty haze",
+      "details": "overgrown vegetation breaking through concrete, abandoned cars, distant smoke columns",
+      "light_dir": "harsh side light from low sun"
+    },
+    "action": {
+      "timeline": [
+        {
+          "time": "0-2s",
+          "action": "walks slowly through the rubble, boots crunching on broken glass"
+        },
+        {
+          "time": "3-4s",
+          "action": "stops and looks up at a crumbling building"
+        },
+        {
+          "time": "5-6s",
+          "action": "tightens grip on the metal pipe, jaw set under the mask"
+        }
+      ],
+      "expression": "grim determination (visible through posture)"
+    },
+    "camera": {
+      "shot": "medium full shot",
+      "movement": "fixed camera, subject walks past",
+      "angle": "low angle",
+      "focal": "35mm anamorphic",
+      "depth": "deep depth of field"
+    },
+    "style": {
+      "anchors": [
+        "post-apocalyptic cinematic",
+        "Mad Max Fury Road aesthetic"
+      ],
+      "tone": "desaturated teal and orange",
+      "saturation": "low saturation, dusty",
+      "lighting": "harsh warm sunset, dust particles in air",
+      "moods": [
+        "oppressive",
+        "tense",
+        "lonely"
+      ]
+    },
+    "motion": [
+      {
+        "code": "固定",
+        "group": 0
+      }
+    ],
+    "extra": "anamorphic lens flare, film grain, cinematic color grade",
+    "duration": 6,
+    "resolution": "1080P"
+  }
+]

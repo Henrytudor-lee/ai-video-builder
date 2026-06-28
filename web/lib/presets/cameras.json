@@ -1,0 +1,48 @@
+{
+  "景别": [
+    {"code": "extreme_close", "label": "大特写", "desc": "extreme close-up, only eyes or detail"},
+    {"code": "close_up", "label": "特写", "desc": "close-up shot, face fills frame"},
+    {"code": "medium_close", "label": "中特写", "desc": "medium close-up, head and shoulders"},
+    {"code": "medium", "label": "中景", "desc": "medium shot, waist up"},
+    {"code": "medium_full", "label": "中全景", "desc": "medium full shot, knees up"},
+    {"code": "full", "label": "全景", "desc": "full shot, full body"},
+    {"code": "wide", "label": "远景", "desc": "wide shot, subject small in environment"},
+    {"code": "extreme_wide", "label": "大远景", "desc": "extreme wide shot, vast landscape"}
+  ],
+  "镜头运动": [
+    {"code": "fixed", "label": "固定", "desc": "fixed camera, no movement"},
+    {"code": "push_in", "label": "推进", "desc": "slowly pushes in toward subject"},
+    {"code": "pull_out", "label": "拉远", "desc": "slowly pulls out from subject"},
+    {"code": "pan_left", "label": "左摇", "desc": "pans to the left"},
+    {"code": "pan_right", "label": "右摇", "desc": "pans to the right"},
+    {"code": "tilt_up", "label": "上摇", "desc": "tilts upward"},
+    {"code": "tilt_down", "label": "下摇", "desc": "tilts downward"},
+    {"code": "tracking", "label": "跟拍", "desc": "tracks alongside subject"},
+    {"code": "dolly", "label": "滑动", "desc": "smooth horizontal dolly move"},
+    {"code": "crane_up", "label": "上升", "desc": "cranes upward"},
+    {"code": "crane_down", "label": "下降", "desc": "cranes downward"},
+    {"code": "handheld", "label": "手持", "desc": "handheld camera, slight shake"},
+    {"code": "orbit", "label": "环绕", "desc": "orbits around subject"}
+  ],
+  "视角": [
+    {"code": "eye_level", "label": "平视", "desc": "eye-level angle"},
+    {"code": "high_angle", "label": "俯视", "desc": "high angle, looking down"},
+    {"code": "low_angle", "label": "仰视", "desc": "low angle, looking up"},
+    {"code": "birds_eye", "label": "鸟瞰", "desc": "bird's eye view from above"},
+    {"code": "worms_eye", "label": "虫视", "desc": "worm's eye view from below"},
+    {"code": "dutch_angle", "label": "荷兰角", "desc": "Dutch angle, tilted"}
+  ],
+  "焦距": [
+    {"code": "wide_angle", "label": "广角", "desc": "wide angle lens, expansive view"},
+    {"code": "standard", "label": "标准", "desc": "standard 50mm"},
+    {"code": "telephoto", "label": "长焦", "desc": "telephoto lens, compressed perspective"},
+    {"code": "fisheye", "label": "鱼眼", "desc": "fisheye lens, distorted edges"},
+    {"code": "macro", "label": "微距", "desc": "macro lens, extreme detail"}
+  ],
+  "景深": [
+    {"code": "shallow", "label": "浅景深", "desc": "shallow depth of field, blurred background"},
+    {"code": "medium_dof", "label": "中景深", "desc": "medium depth of field"},
+    {"code": "deep", "label": "深景深", "desc": "deep depth of field, everything in focus"},
+    {"code": "bokeh", "label": "焦外虚化", "desc": "beautiful bokeh in background"}
+  ]
+}
