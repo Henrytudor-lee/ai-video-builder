@@ -79,9 +79,6 @@ export function charactersDir(pid: string) {
 export function storyboardDir(pid: string, sid: string) {
   return path.join(projectDir(pid), "storyboards", sid);
 }
-export function gridBundlesDir(pid: string) {
-  return path.join(projectDir(pid), "grid_bundles");
-}
 
 // ===== 列表 =====
 export async function listProjects(): Promise<ProjectListItem[]> {
@@ -188,3 +185,4 @@ export async function batchDeleteProjects(ids: string[]): Promise<{ deleted: str
   }
   return { deleted, missing, errors };
 }
+
