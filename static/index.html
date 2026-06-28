@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Video Prompt Builder · 视频提示词工坊</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+  <link rel="stylesheet" href="/static/style.css" />
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body x-data="appData()" x-init="init()">
+
+  <!-- ============== 顶部 ============== -->
+  <header class="appbar">
+    <div class="container appbar-row">
+      <div class="brand">
+        <div class="brand-mark">🎬</div>
+        <div>
+          <div class="brand-name">Video Prompt Builder</div>
+          <div class="brand-sub">海螺 2.3 · 视频提示词工坊</div>
+        </div>
+      </div>
+      <div class="row gap-3">
+        <a href="/project" class="btn btn-ghost btn-sm">📂 分镜工作流</a>
+        <span x-show="config.has_key" class="badge badge-success t-mono" x-text="config.key_preview"></span>
+        <span x-show="!config.has_key" class="badge badge-warn">未配置 API key</span>
+        <button @click="showKeyModal = true" class="btn btn-sm" x-text="config.has_key ? '更换' : '设置'"></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" style="padding-top: var(--s-6); padding-bottom: var(--s-9);">
+    <div class="grid" style="grid-template-columns: minmax(0, 1fr) 360px; gap: var(--s-6);">
+
+      <!-- ============== 左侧：表单 ============== -->
+      <section class="section">
+
+        <!-- 预设模板 -->
+        <div class="card card-pad">
+          <div class="row between mb-4">
+            <div class="row gap-2">
+              <span style="font-size: 16px;">📌</span>
+              <h2 class="t-h2">预设模板</h2>
+              <span class="t-soft t-cap">点一下填充</span>
+            </div>
+            <span class="t-soft" style="font-size: 12px;" x-text="`${(options.presets||[]).length} 个`"></span>
+          </div>
+          <div class="chip-row">
+            <template x-for="p in options.presets || []" :key="p.name">
+              <button @click="loadPreset(p)" class="chip chip-lg" :title="p.description" x-text="p.name"></button>
+            </template>
+          </div>
+        </div>
+
+        <!-- 1. 主体 -->
+        <div class="card">
+          <div class="section-hd" style="padding: var(--s-4) var(--s-5); border-bottom: 1px solid var(--line); background: var(--bg-soft); border-radius: var(--r-lg) var(--r-lg) 0 0;">
+            <div class="lhs">
+              <span class="num">1</span>
+              <div>
+                <div class="title">主体（Subject）</div>
+                <div class="hint">画面里"谁/什么"</div>
+              </div>
+            </div>
+          </div>
+          <div class="card-bd">
+            <!-- 分类 -->
+            <div class="field mb-4">
+              <span class="field-lbl">分类</span>
+              <div class="chip-row">
+                <template x-for="(items, cat) in options.subjects || {}" :key="cat">
+                  <button @click="subject.category = cat"
+                          :class="subject.category === cat ? 'is-on' : ''"
+                          class="chip"
+                          x-text="cat"></button>
+                </template>
+              </div>
+            </div>
+
+            <!-- 选项 -->
+            <div class="field mb-4">
+              <span class="field-lbl">具体对象</span>
+              <div class="chip-row">
+                <template x-for="item in (options.subjects?.[subject.category] || [])" :key="item.code">
+                  <button @click="subject.type = item.code"
+                          :class="subject.type === item.code ? 'is-on' : ''"
+                          class="chip">
+                    <span x-text="item.emoji"></span>
+                    <span x-text="item.label"></span>
+                  </button>
+                </template>
+              </div>
+            </div>
+
+            <!-- 数量 + 描述 -->
+            <div class="grid" style="grid-template-columns: 100px 1fr; gap: var(--s-3);">
+              <div class="field">
+                <label class="field-lbl">数量</label>
+                <input type="number" min="1" max="20" x-model.number="subject.number" class="input" />
+              </div>
+              <div class="field">
+                <label class="field-lbl">外貌/衣着/姿态（自由文本，自动拼到主体后）</label>
+                <input type="text" x-model="subject.description"
+                       placeholder="例：棕色短发、穿宽松 T 恤和卡通短裤、坐在椅子上"
+                       class="input" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. 场景 -->
+        <div class="card">
+          <div class="section-hd" style="padding: var(--s-4) var(--s-5); border-bottom: 1px solid var(--line); background: var(--bg-soft); border-radius: var(--r-lg) var(--r-lg) 0 0;">
+            <div class="lhs">
+              <span class="num">2</span>
+              <div>
+                <div class="title">场景（Setting）</div>
+                <div class="hint">环境、地点、时间、天气</div>
+              </div>
+            </div>
+          </div>
+          <div class="card-bd">
+            <template x-for="(group, cat) in (options.scenes || {})" :key="cat">
+              <div x-show="['室内','室外','幻想'].includes(cat)" class="mb-4">
+                <div class="field-lbl mb-2" x-text="cat + ' ' + (group.icon || '')"></div>
+                <div class="chip-row">
+                  <template x-for="loc in group.items" :key="loc.code">
+                    <button @click="scene.location = loc.desc"
+                            :class="scene.location === loc.desc ? 'is-on' : ''"
+                            class="chip"
+                            :title="loc.desc"
+                            x-text="loc.label"></button>
+                  </template>
+                </div>
+              </div>
+            </template>
+
+            <div class="grid mt-4" style="grid-template-columns: repeat(3, 1fr); gap: var(--s-3);">
+              <div class="field">
+                <label class="field-lbl">时间</label>
+                <select x-model="scene.time" class="select">
+                  <option value="">不限</option>
+                  <template x-for="t in (options.scenes?.['时间'] || [])" :key="t.code">
+                    <option :value="t.desc" x-text="t.label"></option>
+                  </template>
+                </select>
+              </div>
+              <div class="field">
+                <label class="field-lbl">天气</label>
+                <select x-model="scene.weather" class="select">
+                  <option value="">不限</option>
+                  <template x-for="w in (options.scenes?.['天气'] || [])" :key="w.code">
+                    <option :value="w.desc" x-text="w.label"></option>
+                  </template>
+                </select>
+              </div>
+              <div class="field">
+                <label class="field-lbl">光线方向</label>
+                <select x-model="scene.light_dir" class="select">
+                  <option value="">不限</option>
+                  <template x-for="d in (options.scenes?.['光线方向'] || [])" :key="d.code">
+                    <option :value="d.desc" x-text="d.label"></option>
+                  </template>
+                </select>
+              </div>
+            </div>
+
+            <div class="field mt-4">
+              <label class="field-lbl">场景细节补充（陈设、装饰、氛围物）</label>
+              <textarea x-model="scene.details" rows="2"
+                        placeholder="例：浅木家具、榻榻米一角、靠墙海报、半开窗户斜射进来的午后阳光"
+                        class="textarea"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. 动作 -->
+        <div class="card">
+          <div class="section-hd" style="padding: var(--s-4) var(--s-5); border-bottom: 1px solid var(--line); background: var(--bg-soft); border-radius: var(--r-lg) var(--r-lg) 0 0;">
+            <div class="lhs">
+              <span class="num">3</span>
+              <div>
+                <div class="title">动作序列（Action Timeline）</div>
+                <div class="hint">按时序填写 6/10 秒内的动作</div>
+              </div>
+            </div>
+          </div>
+          <div class="card-bd">
+            <div class="field mb-3">
+              <span class="field-lbl">常用动作（点一下填到第一个空段）</span>
+              <div class="chip-row" style="max-height: 80px; overflow-y: auto;">
+                <template x-for="a in (options.actions || []).slice(0, 24)" :key="a.code">
+                  <button @click="addActionToCurrent(a.desc)" class="chip chip-sm" x-text="a.label"></button>
+                </template>
+              </div>
+            </div>
+
+            <div class="col gap-2">
+              <template x-for="(seg, idx) in action.timeline" :key="idx">
+                <div class="row gap-2" style="align-items: stretch;">
+                  <input type="text" x-model="seg.time" placeholder="0-2s"
+                         class="input t-mono" style="width: 90px; flex: 0 0 90px;" />
+                  <input type="text" x-model="seg.action" :placeholder="`第 ${idx+1} 段动作...`"
+                         class="input grow" />
+                  <button @click="action.timeline.splice(idx, 1)"
+                          class="btn btn-icon btn-sm" style="color: var(--danger);" title="删除">×</button>
+                </div>
+              </template>
+            </div>
+
+            <div class="row gap-2 mt-3">
+              <button @click="action.timeline.push({ time: '', action: '' })" class="btn btn-sm">
+                ＋ 添加时段
+              </button>
+              <input type="text" x-model="action.expression" placeholder="表情补充（可选）"
+                     class="input grow" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. 镜头 -->
+        <div class="card">
+          <div class="section-hd" style="padding: var(--s-4) var(--s-5); border-bottom: 1px solid var(--line); background: var(--bg-soft); border-radius: var(--r-lg) var(--r-lg) 0 0;">
+            <div class="lhs">
+              <span class="num">4</span>
+              <div>
+                <div class="title">镜头（Camera）</div>
+                <div class="hint">景别 · 运动 · 视角 · 焦距 · 景深</div>
+              </div>
+            </div>
+          </div>
+          <div class="card-bd">
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--s-4);">
+              <template x-for="(items, groupName) in (options.cameras || {})" :key="groupName">
+                <div class="field">
+                  <span class="field-lbl" x-text="groupName"></span>
+                  <div class="chip-row">
+                    <template x-for="item in items" :key="item.code">
+                      <button @click="setCamera(groupName, item.code, item.desc)"
+                              :class="getCameraActive(groupName, item.code) ? 'is-on' : ''"
+                              class="chip"
+                              :title="item.desc"
+                              x-text="item.label"></button>
+                    </template>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. 风格 -->
+        <div class="card">
+          <div class="section-hd" style="padding: var(--s-4) var(--s-5); border-bottom: 1px solid var(--line); background: var(--bg-soft); border-radius: var(--r-lg) var(--r-lg) 0 0;">
+            <div class="lhs">
+              <span class="num">5</span>
+              <div>
+                <div class="title">风格（Style &amp; Mood）</div>
+                <div class="hint">视觉风格 · 色调 · 光线 · 氛围</div>
+              </div>
+            </div>
+          </div>
+          <div class="card-bd">
+            <div class="field mb-4">
+              <span class="field-lbl">🎨 艺术风格（可多选，作为风格锚点）</span>
+              <div class="chip-row" style="max-height: 160px; overflow-y: auto;">
+                <template x-for="s in (options.styles?.['艺术风格']?.items || [])" :key="s.code">
+                  <button @click="toggleStyleAnchor(s.desc)"
+                          :class="style.anchors.includes(s.desc) ? 'is-on' : ''"
+                          class="chip"
+                          x-text="s.label"></button>
+                </template>
+              </div>
+            </div>
+
+            <div class="grid mb-4" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--s-3);">
+              <template x-for="(items, groupName) in getStyleOptions()" :key="groupName">
+                <div class="field">
+                  <span class="field-lbl" x-text="groupName"></span>
+                  <select :value="getStyleSelect(groupName)" @change="setStyleField(groupName, $event.target.value)" class="select">
+                    <option value="">不限</option>
+                    <template x-for="item in items" :key="item.code">
+                      <option :value="item.desc" x-text="item.label"></option>
+                    </template>
+                  </select>
+                </div>
+              </template>
+            </div>
+
+            <div class="field">
+              <span class="field-lbl">🌡️ 氛围关键词（可多选）</span>
+              <div class="chip-row" style="max-height: 130px; overflow-y: auto;">
+                <template x-for="m in (options.atmospheres || [])" :key="m.code">
+                  <button @click="toggleMood(m.code)"
+                          :class="style.moods.includes(m.code) ? 'is-on' : ''"
+                          class="chip">
+                    <span x-text="m.emoji"></span>
+                    <span x-text="m.label"></span>
+                  </button>
+                </template>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. 运镜 + 规格 -->
+        <div class="card">
+          <div class="section-hd" style="padding: var(--s-4) var(--s-5); border-bottom: 1px solid var(--line); background: var(--bg-soft); border-radius: var(--r-lg) var(--r-lg) 0 0;">
+            <div class="lhs">
+              <span class="num">6</span>
+              <div>
+                <div class="title">运镜指令 + 输出规格</div>
+                <div class="hint">海螺 2.3 专用方括号指令</div>
+              </div>
+            </div>
+          </div>
+          <div class="card-bd">
+            <div class="field mb-4">
+              <span class="field-lbl">🎬 运镜指令</span>
+              <div class="chip-row">
+                <template x-for="m in (options.motions || [])" :key="m.code">
+                  <button @click="toggleMotion(m)"
+                          :class="hasMotion(m.code) ? 'is-on' : ''"
+                          class="chip t-mono"
+                          :title="m.desc"
+                          x-text="m.label + ' ' + m.code"></button>
+                </template>
+              </div>
+            </div>
+
+            <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; gap: var(--s-3);">
+              <div class="field">
+                <label class="field-lbl">时长</label>
+                <select x-model.number="duration" class="select">
+                  <option :value="6">6 秒</option>
+                  <option :value="10">10 秒</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="field-lbl">分辨率</label>
+                <select x-model="resolution" class="select">
+                  <option value="768P">768P（推荐，省额度）</option>
+                  <option value="1080P">1080P（10s 不支持）</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="field-lbl">模型</label>
+                <input type="text" value="Hailuo 2.3（最新）" disabled class="input t-soft" />
+              </div>
+            </div>
+
+            <div class="field mt-4">
+              <label class="field-lbl">自由补充（会拼到 prompt 末尾）</label>
+              <textarea x-model="extra" rows="2"
+                        placeholder="例：anamorphic lens flare, cinematic grain, atmospheric light"
+                        class="textarea t-mono"></textarea>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ============== 右侧：预览 + 生成 + 历史 ============== -->
+      <aside class="col gap-4">
+
+        <!-- 预览 -->
+        <div class="preview">
+          <div class="preview-hd">
+            <div class="row gap-2">
+              <span style="font-size: 14px;">📝</span>
+              <h2 class="t-h3">实时 Prompt 预览</h2>
+            </div>
+            <button @click="copyPrompt" class="btn btn-sm">
+              <span x-text="copyBtnText"></span>
+            </button>
+          </div>
+          <div class="preview-bd">
+            <div :class="promptLength > 2000 ? 'prompt-meter is-over' : (promptLength > 1800 ? 'prompt-meter is-warn' : 'prompt-meter')" style="margin-bottom: var(--s-3);">
+              <span x-text="`${promptLength} / 2000 字符`"></span>
+              <div class="bar">
+                <div :style="`width: ${Math.min(promptLength/2000*100, 100)}%`"></div>
+              </div>
+            </div>
+            <div class="prompt-text">
+              <template x-if="!currentPrompt">
+                <div class="prompt-empty">填写左侧字段后会自动拼出</div>
+              </template>
+              <template x-if="currentPrompt"><span x-text="currentPrompt"></span></template>
+            </div>
+          </div>
+        </div>
+
+        <!-- 生成 -->
+        <div class="card card-pad">
+          <button @click="generate" class="btn btn-primary btn-lg btn-block"
+                  :class="generating ? 'is-busy' : ''"
+                  :disabled="generating || !config.has_key">
+            <span x-show="!generating" class="row gap-2" style="display: inline-flex;">
+              <span style="font-size: 16px;">🎬</span>
+              <span>生成视频</span>
+            </span>
+            <span x-show="generating" class="row gap-2" style="display: inline-flex;">
+              <span class="spinner"></span>
+              <span x-text="generateStatus"></span>
+            </span>
+          </button>
+          <div x-show="!config.has_key" class="mt-3 t-faint" style="font-size: 12px; text-align: center;">
+            请先在右上角设置 API key
+          </div>
+          <div x-show="generateError" class="mt-3" style="font-size: 12px; color: var(--danger); text-align: center;" x-text="generateError"></div>
+        </div>
+
+        <!-- 生成结果 -->
+        <div x-show="currentResult" class="card">
+          <div class="card-hd">
+            <h2 class="t-h2">✨ 生成结果</h2>
+            <span class="badge" :class="currentResult?.status === 'Success' ? 'badge-success' : (currentResult?.status === 'Fail' ? 'badge-danger' : 'badge-warn')" x-text="currentResult?.status"></span>
+          </div>
+          <div class="card-bd">
+            <template x-if="currentResult?.local_file">
+              <div class="col gap-3">
+                <video :src="`/outputs/${currentResult.local_file}`" controls style="width: 100%; border-radius: var(--r-sm); aspect-ratio: 16/9;"></video>
+                <div class="row between t-faint" style="font-size: 11px;">
+                  <span class="t-mono" x-text="`task: ${currentResult.task_id?.slice(0,12)}…`"></span>
+                  <a :href="`/outputs/${currentResult.local_file}`" :download="currentResult.local_file" class="badge badge-brand">下载 ↓</a>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- 历史 -->
+        <div class="card">
+          <div class="card-hd">
+            <h2 class="t-h2">📚 历史记录</h2>
+            <span class="t-faint" style="font-size: 12px;" x-text="`${history.length} 条`"></span>
+          </div>
+          <div style="max-height: 360px; overflow-y: auto;">
+            <template x-for="h in history" :key="h.id">
+              <div class="row gap-3" style="padding: var(--s-3) var(--s-4); border-bottom: 1px solid var(--line);">
+                <video x-show="h.local_file" :src="`/outputs/${h.local_file}`"
+                       style="width: 80px; height: 48px; object-fit: cover; border-radius: var(--r-xs); background: #000; flex-shrink: 0;" muted></video>
+                <div class="col gap-1 grow" style="min-width: 0;">
+                  <div class="t-mono line-clamp-2" style="font-size: 12px;" x-text="h.prompt"></div>
+                  <div class="row gap-2 t-faint" style="font-size: 11px;">
+                    <span x-text="h.preset_name || '自由'"></span>
+                    <span>·</span>
+                    <span x-text="`${h.duration}s ${h.resolution}`"></span>
+                    <span>·</span>
+                    <span x-text="h.created_at?.slice(5,16) || ''"></span>
+                  </div>
+                </div>
+                <button @click="deleteHistory(h.id)" class="btn btn-ghost btn-sm btn-icon" title="删除">×</button>
+              </div>
+            </template>
+            <div x-show="history.length === 0" class="empty-state">
+              <div class="icon">📭</div>
+              <div>还没有生成记录</div>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- ============== API Key Modal ============== -->
+  <div x-show="showKeyModal" x-cloak
+       @click.self="showKeyModal = false"
+       class="modal-mask">
+    <div class="modal" style="max-width: 460px;">
+      <div class="modal-hd">
+        <h3 class="t-h2">设置 MiniMax API Key</h3>
+        <button @click="showKeyModal = false" class="btn btn-ghost btn-sm btn-icon">×</button>
+      </div>
+      <div class="modal-bd">
+        <p class="t-soft mb-3" style="font-size: 12px;">
+          在 <a href="https://platform.minimaxi.com/user-center/basic-information/interface-key" target="_blank" class="t-mono">platform.minimaxi.com</a> 用户中心 → 接口密钥获取
+        </p>
+        <input type="text" x-model="newKey" placeholder="eyJhbGciOi..."
+               class="input t-mono" />
+        <p class="t-faint mt-3" style="font-size: 11px;">保存在本项目 config.json 文件里，不会上传任何服务器</p>
+      </div>
+      <div class="modal-ft">
+        <button @click="showKeyModal = false" class="btn">取消</button>
+        <button @click="saveKey" class="btn btn-primary">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/modals.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

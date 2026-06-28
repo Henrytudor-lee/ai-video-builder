@@ -1,0 +1,86 @@
+{
+  "室内": {
+    "icon": "🏠",
+    "items": [
+      {"code": "bedroom", "label": "卧室", "desc": "bedroom, bed, pillow, soft lighting"},
+      {"code": "kitchen", "label": "厨房", "desc": "kitchen, dining table, warm interior"},
+      {"code": "living_room", "label": "客厅", "desc": "living room, sofa, cozy interior"},
+      {"code": "study", "label": "书房", "desc": "study room, bookshelf, desk lamp"},
+      {"code": "cafe", "label": "咖啡馆", "desc": "cafe, espresso machine, wood furniture"},
+      {"code": "restaurant", "label": "餐厅", "desc": "restaurant, ambient lighting, tables"},
+      {"code": "office", "label": "办公室", "desc": "office, desks, computers, fluorescent lights"},
+      {"code": "classroom", "label": "教室", "desc": "classroom, desks, blackboard"},
+      {"code": "library", "label": "图书馆", "desc": "library, tall bookshelves, quiet atmosphere"},
+      {"code": "hospital", "label": "医院", "desc": "hospital, clean white interior, medical equipment"},
+      {"code": "subway", "label": "地铁", "desc": "subway train interior, handrails, passengers"},
+      {"code": "bathroom", "label": "浴室", "desc": "bathroom, mirror, steam, tiles"},
+      {"code": "japanese_room", "label": "日式房间", "desc": "Japanese-style room, tatami, shoji screen, low table"},
+      {"code": "attic", "label": "阁楼", "desc": "attic, sloped ceiling, dusty sunlight"},
+      {"code": "workshop", "label": "工作室", "desc": "workshop, tools, workbench, scattered parts"}
+    ]
+  },
+  "室外": {
+    "icon": "🌳",
+    "items": [
+      {"code": "city_street", "label": "城市街道", "desc": "city street, sidewalks, buildings, traffic"},
+      {"code": "park", "label": "公园", "desc": "park, trees, benches, grass"},
+      {"code": "beach", "label": "海滩", "desc": "beach, sand, ocean waves, seashells"},
+      {"code": "forest", "label": "森林", "desc": "forest, tall trees, moss, dappled sunlight"},
+      {"code": "desert", "label": "沙漠", "desc": "desert, sand dunes, scorching sun"},
+      {"code": "snowfield", "label": "雪原", "desc": "snowfield, falling snow, white landscape"},
+      {"code": "mountain", "label": "山地", "desc": "mountain, rocky terrain, misty peaks"},
+      {"code": "farmland", "label": "农田", "desc": "farmland, wheat fields, tractor"},
+      {"code": "rooftop", "label": "屋顶", "desc": "rooftop, skyline view, water tanks"},
+      {"code": "bridge", "label": "桥梁", "desc": "bridge, suspension cables, river below"},
+      {"code": "courtyard", "label": "庭院", "desc": "Chinese courtyard, traditional architecture, stone path"},
+      {"code": "ruins", "label": "遗迹", "desc": "ancient ruins, broken columns, overgrown vines"},
+      {"code": "harbor", "label": "港口", "desc": "harbor, boats, seagulls, sunset"},
+      {"code": "highway", "label": "公路", "desc": "highway, road signs, fast-moving traffic"}
+    ]
+  },
+  "幻想": {
+    "icon": "✨",
+    "items": [
+      {"code": "magical_forest", "label": "魔法森林", "desc": "magical forest, glowing mushrooms, floating lights, ancient trees"},
+      {"code": "castle", "label": "城堡", "desc": "medieval castle, stone walls, banners, torches"},
+      {"code": "spaceship", "label": "飞船舱", "desc": "spaceship interior, control panels, alien lighting"},
+      {"code": "cyberpunk_street", "label": "赛博朋克街道", "desc": "cyberpunk street, neon signs, holograms, rain-soaked"},
+      {"code": "steampunk_city", "label": "蒸汽朋克城", "desc": "steampunk city, brass machinery, steam, gears"},
+      {"code": "underwater_palace", "label": "水下宫殿", "desc": "underwater palace, coral, fish, shimmering light"},
+      {"code": "floating_island", "label": "浮空岛", "desc": "floating island, waterfalls pouring into the sky, clouds"},
+      {"code": "crystal_cave", "label": "水晶洞穴", "desc": "crystal cave, glowing crystals, refracted light"},
+      {"code": "dungeon", "label": "地牢", "desc": "dungeon, torchlight, dripping water, dark corners"},
+      {"code": "celestial_realm", "label": "仙境", "desc": "celestial realm, clouds, golden light, ethereal atmosphere"},
+      {"code": "post_apocalyptic", "label": "末日废墟", "desc": "post-apocalyptic wasteland, rubble, overgrown plants"},
+      {"code": "vapor_lounge", "label": "合成波酒吧", "desc": "vaporwave lounge, neon grid, retro 80s aesthetic"}
+    ]
+  },
+  "时间": [
+    {"code": "dawn", "label": "黎明", "desc": "at dawn"},
+    {"code": "morning", "label": "上午", "desc": "in the morning"},
+    {"code": "noon", "label": "正午", "desc": "at noon"},
+    {"code": "afternoon", "label": "午后", "desc": "in the afternoon"},
+    {"code": "dusk", "label": "黄昏", "desc": "at dusk"},
+    {"code": "evening", "label": "傍晚", "desc": "in the evening"},
+    {"code": "night", "label": "夜晚", "desc": "at night"},
+    {"code": "midnight", "label": "深夜", "desc": "at midnight"}
+  ],
+  "天气": [
+    {"code": "sunny", "label": "晴", "desc": "sunny weather"},
+    {"code": "cloudy", "label": "多云", "desc": "cloudy weather"},
+    {"code": "overcast", "label": "阴天", "desc": "overcast sky"},
+    {"code": "rainy", "label": "雨", "desc": "rainy weather"},
+    {"code": "stormy", "label": "雷暴", "desc": "stormy with lightning"},
+    {"code": "snowy", "label": "雪", "desc": "snowy weather"},
+    {"code": "foggy", "label": "雾", "desc": "foggy atmosphere"},
+    {"code": "windy", "label": "大风", "desc": "strong wind"}
+  ],
+  "光线方向": [
+    {"code": "front", "label": "正面光", "desc": "front lighting"},
+    {"code": "side", "label": "侧光", "desc": "side lighting"},
+    {"code": "back", "label": "逆光", "desc": "backlit"},
+    {"code": "top", "label": "顶光", "desc": "top lighting"},
+    {"code": "rim", "label": "轮廓光", "desc": "rim lighting"},
+    {"code": "scattered", "label": "散射光", "desc": "scattered soft light"}
+  ]
+}

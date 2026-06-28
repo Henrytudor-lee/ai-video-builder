@@ -1,0 +1,17 @@
+[
+  {"code": "推进", "label": "推进", "desc": "推进镜头，缓慢靠近主体", "type": "move", "group": 0},
+  {"code": "拉远", "label": "拉远", "desc": "拉远镜头，远离主体", "type": "move", "group": 0},
+  {"code": "左移", "label": "左移", "desc": "镜头向左平移", "type": "move", "group": 0},
+  {"code": "右移", "label": "右移", "desc": "镜头向右平移", "type": "move", "group": 0},
+  {"code": "上升", "label": "上升", "desc": "镜头向上移动", "type": "move", "group": 0},
+  {"code": "下降", "label": "下降", "desc": "镜头向下移动", "type": "move", "group": 0},
+  {"code": "左摇", "label": "左摇", "desc": "镜头向左摇", "type": "rotate", "group": 0},
+  {"code": "右摇", "label": "右摇", "desc": "镜头向右摇", "type": "rotate", "group": 0},
+  {"code": "上摇", "label": "上摇", "desc": "镜头向上摇", "type": "rotate", "group": 0},
+  {"code": "下摇", "label": "下摇", "desc": "镜头向下摇", "type": "rotate", "group": 0},
+  {"code": "变焦推近", "label": "变焦推近", "desc": "焦距拉近，主体变大", "type": "zoom", "group": 0},
+  {"code": "变焦拉远", "label": "变焦拉远", "desc": "焦距拉远，主体变小", "type": "zoom", "group": 0},
+  {"code": "晃动", "label": "晃动", "desc": "手持晃感动", "type": "effect", "group": 0},
+  {"code": "跟随", "label": "跟随", "desc": "跟随主体运动", "type": "effect", "group": 0},
+  {"code": "固定", "label": "固定", "desc": "完全固定机位", "type": "effect", "group": 0}
+]

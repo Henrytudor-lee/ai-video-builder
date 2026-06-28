@@ -1,0 +1,43 @@
+# 环境
+.env
+.env.local
+.env.*.local
+
+# Supabase 本地配置
+supabase/.branches
+supabase/.temp
+
+# Node
+node_modules/
+.next/
+out/
+build/
+dist/
+
+# Python（迁移前残留）
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# 项目数据（本地测试）
+data/projects/
+outputs/*
+!outputs/.gitkeep
+
+# 用户配置
+config.json
+!config.example.json
+
+# IDE / 工具
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Playwright 本地缓存
+.playwright-mcp/
+.claude/
+
+# macOS resource forks (any level)
+._*

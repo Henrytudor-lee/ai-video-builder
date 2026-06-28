@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>分镜工作流 · Video Prompt Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+  <link rel="stylesheet" href="/static/style.css" />
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body x-data="projectApp()" x-init="init()">
+
+  <!-- ============== 顶部 ============== -->
+  <header class="appbar">
+    <div class="container appbar-row">
+      <div class="brand">
+        <div class="brand-mark">🎬</div>
+        <div>
+          <div class="brand-name">Video Prompt Builder</div>
+          <div class="brand-sub">海螺 2.3 · 视频提示词工坊</div>
+        </div>
+      </div>
+      <div class="row gap-3">
+        <a href="/" class="btn btn-ghost btn-sm">⚡ 单分镜 Builder</a>
+        <span x-show="config.has_key" class="badge badge-success t-mono" x-text="config.key_preview"></span>
+        <span x-show="!config.has_key" class="badge badge-warn">未配置 API key</span>
+        <button @click="showKeyModal = true" class="btn btn-sm" x-text="config.has_key ? '更换' : '设置'"></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" style="padding-top: var(--s-6); padding-bottom: var(--s-9);">
+    <!-- ============== 项目列表视图 ============== -->
+    <div x-show="!projectLoaded" style="padding-top: var(--s-6); padding-bottom: var(--s-9);">
+      <div class="row between proj-list-head">
+        <h1 class="t-h1">项目列表</h1>
+        <div class="row gap-2">
+          <button @click="toggleSelectMode" class="btn"
+                  :class="selectMode ? 'btn-primary' : ''"
+                  x-text="selectMode ? '✓ 完成' : '☑ 管理'"></button>
+          <button x-show="!selectMode" @click="createProject" class="btn btn-primary">＋ 新建项目</button>
+        </div>
+      </div>
+
+      <!-- 批量操作条 -->
+      <div x-show="selectMode" x-cloak class="bulk-bar mb-3">
+        <div class="row gap-2" style="align-items: center;">
+          <span class="t-soft" style="font-size: 13px;">
+            已选 <span class="t-mono" style="font-weight: 600; color: var(--brand);" x-text="selectedIds.length"></span> 个 / 共 <span class="t-mono" x-text="projects.length"></span> 个
+          </span>
+          <button @click="selectAll" class="btn btn-sm" x-text="isAllSelected() ? '取消全选' : '全选'"></button>
+          <button @click="invertSelection" class="btn btn-sm">反选</button>
+          <div style="flex: 1;"></div>
+          <button @click="batchDeleteProjects" :disabled="selectedIds.length === 0"
+                  class="btn btn-sm btn-danger">
+            🗑 删除选中 <span x-show="selectedIds.length > 0" x-text="`(${selectedIds.length})`"></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="proj-grid">
+        <template x-for="p in projects" :key="p.id">
+          <div class="proj-card"
+               :class="[
+                 !p.script ? 'proj-card-empty' : '',
+                 selectMode ? 'is-selectable' : '',
+                 selectedIds.includes(p.id) ? 'is-selected' : ''
+               ]"
+               @click="onProjCardClick(p)">
+            <div class="row between">
+              <div class="row gap-2" style="align-items: center; min-width: 0;">
+                <label x-show="selectMode" @click.stop class="proj-check"
+                       :class="selectedIds.includes(p.id) ? 'is-on' : ''">
+                  <input type="checkbox" :checked="selectedIds.includes(p.id)"
+                         @change="toggleSelect(p.id)" />
+                  <span class="proj-check-box"></span>
+                </label>
+                <div class="proj-card-name" x-text="p.name"></div>
+              </div>
+              <button x-show="!selectMode" @click.stop="deleteProject(p.id)" class="btn btn-ghost btn-sm btn-icon" title="删除">×</button>
+            </div>
+            <div class="proj-card-snippet" x-text="p.script || '（暂无剧本）'"></div>
+            <div class="proj-card-foot">
+              <div class="proj-card-meta">
+                <span class="item"><span style="opacity:.5;">▭</span> <span x-text="p.aspect_ratio || '16:9'"></span></span>
+                <span class="item">👤 <span class="t-mono" x-text="(p.characters||[]).length"></span></span>
+                <span class="item">🎬 <span class="t-mono" x-text="(p.storyboards||[]).length"></span></span>
+              </div>
+              <span class="t-soft" x-text="(p.updated_at || p.created_at || '').slice(5,16)"></span>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <div x-show="projects.length === 0" class="empty-state" style="margin-top: var(--s-7);">
+        <div class="icon">🎬</div>
+        <div>还没有项目，点右上角"＋ 新建项目"开始</div>
+      </div>
+    </div>
+
+    <!-- ============== 项目视图 ============== -->
+    <div x-show="projectLoaded" x-cloak style="padding-top: var(--s-6); padding-bottom: var(--s-9);">
+      <div class="row between mb-5">
+        <div class="row gap-3" style="align-items: center;">
+          <button @click="closeProject" class="btn btn-ghost btn-sm">← 返回</button>
+          <input class="input" x-model="currentProject.name" @blur="saveProject"
+                 style="font-size: 18px; font-weight: 600; max-width: 360px;" />
+        </div>
+        <div class="row gap-2">
+          <select x-model="currentProject.aspect_ratio" @change="saveProject" class="input" style="width: 140px;">
+            <template x-for="r in aspectRatios" :key="r.value">
+              <option :value="r.value" x-text="r.label"></option>
+            </template>
+          </select>
+          <button @click="showBrainstorm = true" class="btn">💡 头脑风暴</button>
+        </div>
+      </div>
+
+      <!-- 步骤导航 -->
+      <div class="stepper mb-5">
+        <template x-for="(s, i) in steps" :key="i">
+          <div class="step" :class="currentStep === (i+1) ? 'is-on' : ''" @click="currentStep = (i+1)">
+            <div class="step-num" x-text="(i+1)"></div>
+            <div class="step-label" x-text="s"></div>
+          </div>
+        </template>
+      </div>
+
+      <!-- 步骤 1: 剧本 -->
+      <div x-show="currentStep === 1" class="card card-pad">
+        <h2 class="t-h2 mb-3">📝 剧本</h2>
+        <textarea x-model="currentProject.script" @blur="saveProject"
+                  class="input" rows="14" style="font-family: var(--f-mono); line-height: 1.6;"
+                  placeholder="在这里写你的短片剧本…"></textarea>
+        <div class="row between mt-3">
+          <span class="t-soft" style="font-size: 12px;">
+            <span class="t-mono" x-text="(currentProject.script || '').length"></span> 字
+          </span>
+          <button @click="showBrainstorm = true" class="btn btn-sm">💡 用 AI 头脑风暴找灵感</button>
+        </div>
+      </div>
+
+      <!-- 步骤 2: 角色 -->
+      <div x-show="currentStep === 2" x-cloak>
+        <div class="row between mb-4">
+          <h2 class="t-h2">👤 角色</h2>
+          <div class="row gap-2">
+            <button @click="aiGenerateCharacters" :disabled="generatingCharacters"
+                    class="btn btn-sm">
+              <span x-show="!generatingCharacters">✨ AI 抽取角色</span>
+              <span x-show="generatingCharacters" class="row gap-2"><span class="spinner"></span> 生成中…</span>
+            </button>
+            <button @click="showAddChar = true" class="btn btn-primary btn-sm">＋ 添加角色</button>
+          </div>
+        </div>
+        <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--s-4);">
+          <template x-for="c in currentProject.characters || []" :key="c.id">
+            <div class="card card-pad">
+              <div class="row between mb-2">
+                <strong x-text="c.name"></strong>
+                <button @click="deleteChar(c.id)" class="btn btn-ghost btn-sm btn-icon">×</button>
+              </div>
+              <div class="char-img" :class="c.image_path ? '' : 'is-empty'">
+                <template x-if="c.image_path">
+                  <img :src="`/api/characters/${c.id}/image`" @click="openLightbox({kind:'single', src: `/api/characters/${c.id}/image`, title: c.name})" />
+                </template>
+                <template x-if="!c.image_path">
+                  <span>暂无图</span>
+                </template>
+              </div>
+              <p class="t-soft" style="font-size: 12px; margin-top: var(--s-2);" x-text="c.description || '（无描述）'"></p>
+            </div>
+          </template>
+        </div>
+        <div x-show="(currentProject.characters||[]).length === 0" class="empty-state">
+          <div class="icon">👤</div>
+          <div>暂无角色，先写剧本然后用 AI 抽取，或手动添加</div>
+        </div>
+      </div>
+
+      <!-- 步骤 3: 分镜 -->
+      <div x-show="currentStep === 3" x-cloak>
+        <div class="row between mb-4">
+          <h2 class="t-h2">🎬 分镜</h2>
+          <div class="row gap-2">
+            <select x-model="selectedStyleCode" @change="onStyleChange" class="input" style="width: 180px;">
+              <option value="">—— 选择风格 ——</option>
+              <template x-for="st in artStyles" :key="st.code">
+                <option :value="st.code" x-text="st.name"></option>
+              </template>
+            </select>
+            <button @click="aiGenerateStoryboards" :disabled="generatingStoryboards || !selectedStyleCode"
+                    class="btn btn-sm">
+              <span x-show="!generatingStoryboards">✨ AI 生成分镜</span>
+              <span x-show="generatingStoryboards" class="row gap-2"><span class="spinner"></span> 生成中…</span>
+            </button>
+            <button @click="showAddSb = true" class="btn btn-primary btn-sm">＋ 添加分镜</button>
+          </div>
+        </div>
+        <div class="col gap-4">
+          <template x-for="(sb, idx) in currentProject.storyboards || []" :key="sb.id">
+            <div class="card card-pad">
+              <div class="row between mb-3">
+                <div class="row gap-3" style="align-items: center;">
+                  <span class="badge badge-brand" x-text="`#${idx+1}`"></span>
+                  <strong x-text="sb.name || `分镜 ${idx+1}`"></strong>
+                  <span class="t-soft" x-text="`${sb.duration || 6}s`"></span>
+                </div>
+                <div class="row gap-2">
+                  <input type="number" min="0.5" max="10" step="0.5"
+                         :value="sb.duration || 6"
+                         @change="updateSbDuration(sb.id, $event.target.value)"
+                         class="input" style="width: 80px;" title="时长(秒)" />
+                  <button @click="deleteSb(sb.id)" class="btn btn-ghost btn-sm btn-icon">×</button>
+                </div>
+              </div>
+              <div class="row gap-4">
+                <div class="sb-canvas" :class="sb.selected_image ? '' : 'is-empty'">
+                  <template x-if="sb.selected_image">
+                    <img :src="`/api/storyboards/${sb.id}/image`"
+                         @click="openLightbox({kind:'sb', sbId: sb.id, idx: 0})" />
+                  </template>
+                  <template x-if="!sb.selected_image">
+                    <span x-text="generatingSb === sb.id ? '生成中…' : '点右侧生成候选图'"></span>
+                  </template>
+                </div>
+                <div class="col gap-2" style="flex: 1;">
+                  <textarea x-model="sb.simple_prompt" @blur="saveSbPrompt(sb.id, sb.simple_prompt)"
+                            class="input" rows="4" placeholder="这个分镜的简要描述…"></textarea>
+                  <div class="row gap-2">
+                    <button @click="genSbCandidates(sb.id, 4)" :disabled="generatingSb === sb.id"
+                            class="btn btn-sm">
+                      <span x-show="generatingSb !== sb.id">🎨 生成 4 张候选</span>
+                      <span x-show="generatingSb === sb.id" class="row gap-2"><span class="spinner"></span> 生成中…</span>
+                    </button>
+                    <template x-if="sb.candidates && sb.candidates.length > 0">
+                      <button @click="openLightbox({kind:'sb', sbId: sb.id, idx: 0})" class="btn btn-sm btn-primary">
+                        选图 (从 <span x-text="sb.candidates.length"></span> 张中)
+                      </button>
+                    </template>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+        <div x-show="(currentProject.storyboards||[]).length === 0" class="empty-state">
+          <div class="icon">🎬</div>
+          <div>暂无分镜，先选风格然后用 AI 生成，或手动添加</div>
+        </div>
+      </div>
+
+      <!-- 步骤 4: 导出 -->
+      <div x-show="currentStep === 4" x-cloak>
+        <div class="card card-pad mb-4">
+          <h2 class="t-h2 mb-3">🎞️ 自动拼接成片</h2>
+          <p class="t-soft mb-4">把已选候选图的分镜，自动拼接为完整短片（含转场）</p>
+          <div class="row gap-3 mb-4">
+            <label class="row gap-2" style="align-items: center;">
+              <span class="t-soft">转场：</span>
+              <select x-model="renderOpts.transition" class="input" style="width: 120px;">
+                <option value="fade">淡入淡出</option>
+                <option value="wipeleft">左擦</option>
+                <option value="wiperight">右擦</option>
+                <option value="slideup">上推</option>
+                <option value="slidedown">下推</option>
+                <option value="circlecrop">圆形展开</option>
+                <option value="none">无</option>
+              </select>
+            </label>
+            <label class="row gap-2" style="align-items: center;">
+              <span class="t-soft">时长：</span>
+              <input type="number" min="0.1" max="3" step="0.1" x-model.number="renderOpts.transition_duration"
+                     class="input" style="width: 80px;" />
+              <span class="t-soft">秒</span>
+            </label>
+          </div>
+          <button @click="stitchFinal" :disabled="rendering" class="btn btn-primary">
+            <span x-show="!rendering">🎬 开始拼接成片</span>
+            <span x-show="rendering" class="row gap-2"><span class="spinner"></span> 处理中…</span>
+          </button>
+          <div x-show="finalVideo" x-cloak class="mt-4">
+            <video :src="finalVideo" controls style="width: 100%; border-radius: var(--r-md); aspect-ratio: 16/9;"></video>
+            <a :href="finalVideo" :download="`project-${currentProject.id}.mp4`" class="btn mt-3">⬇ 下载成片</a>
+          </div>
+        </div>
+        <div class="card card-pad">
+          <h2 class="t-h2 mb-3">🎞️ 九宫格合并</h2>
+          <p class="t-soft mb-4">把已选候选图的分镜合成一张 3×3 大图，发一次视频即可展示所有分镜</p>
+          <button @click="compositeGrid" :disabled="composingGrid" class="btn">
+            <span x-show="!composingGrid">🧩 合成九宫格</span>
+            <span x-show="composingGrid" class="row gap-2"><span class="spinner"></span> 合成中…</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============== 头脑风暴 Modal ============== -->
+    <div x-show="showBrainstorm" x-cloak @click.self="showBrainstorm = false" class="modal-mask">
+      <div class="modal" style="max-width: 720px;">
+        <div class="modal-hd">
+          <h3 class="t-h2">💡 AI 头脑风暴</h3>
+          <button @click="showBrainstorm = false" class="btn btn-ghost btn-sm btn-icon">×</button>
+        </div>
+        <div class="modal-bd">
+          <label class="field-lbl">简短描述（1-3 句）</label>
+          <textarea x-model="brainstormBrief" rows="3" class="input mb-3" placeholder="例：5 岁男孩在雨夜追逐一只流浪猫"></textarea>
+          <div class="row gap-3 mb-3">
+            <label class="row gap-2" style="align-items: center; flex: 1;">
+              <span class="t-soft" style="font-size: 12px;">生成数量</span>
+              <input type="number" min="3" max="12" x-model.number="brainstormCount" class="input" style="width: 80px;" />
+            </label>
+            <label class="row gap-2" style="align-items: center; flex: 2;">
+              <span class="t-soft" style="font-size: 12px;">风格提示（可选）</span>
+              <input type="text" x-model="brainstormStyleHint" class="input" placeholder="如：吉卜力风格" />
+            </label>
+          </div>
+          <button @click="runBrainstorm" :disabled="brainstormLoading" class="btn btn-primary btn-block">
+            <span x-show="!brainstormLoading">✨ 开始头脑风暴</span>
+            <span x-show="brainstormLoading" class="row gap-2" style="justify-content: center;"><span class="spinner"></span> 思考中…</span>
+          </button>
+          <div x-show="brainstormIdeas.length > 0" x-cloak class="mt-4">
+            <label class="field-lbl">选择一个方向（会作为新项目剧本）</label>
+            <div class="col gap-2">
+              <template x-for="(idea, i) in brainstormIdeas" :key="i">
+                <button @click="applyIdea(idea)" class="card card-pad" style="text-align: left; cursor: pointer;">
+                  <strong x-text="`#${i+1} ${idea.title || ''}`"></strong>
+                  <p class="t-soft" style="font-size: 12px; margin-top: 4px;" x-text="idea.script || idea.brief || ''"></p>
+                </button>
+              </template>
+            </div>
+          </div>
+          <div x-show="brainstormError" x-cloak class="t-soft mt-3" style="color: var(--danger); font-size: 12px;" x-text="brainstormError"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============== 灯箱 ============== -->
+    <div x-show="lightbox" x-cloak @click.self="lightbox = null" @keydown.window.escape="lightbox = null"
+         class="lightbox-mask">
+      <button @click="lightbox = null" class="lightbox-close">×</button>
+      <button @click="lbPrev" class="lightbox-nav lightbox-prev">‹</button>
+      <button @click="lbNext" class="lightbox-nav lightbox-next">›</button>
+      <img :src="lbCurrent()" class="lightbox-img" />
+      <div class="lightbox-cap" x-text="lbCaption()"></div>
+    </div>
+</main>
+
+  <!-- ============== API Key Modal ============== -->
+  <div x-show="showKeyModal" x-cloak
+       @click.self="showKeyModal = false"
+       class="modal-mask">
+    <div class="modal" style="max-width: 460px;">
+      <div class="modal-hd">
+        <h3 class="t-h2">设置 MiniMax API Key</h3>
+        <button @click="showKeyModal = false" class="btn btn-ghost btn-sm btn-icon">×</button>
+      </div>
+      <div class="modal-bd">
+        <p class="t-soft mb-3" style="font-size: 12px;">
+          在 <a href="https://platform.minimaxi.com/user-center/basic-information/interface-key" target="_blank" class="t-mono">platform.minimaxi.com</a> 用户中心 → 接口密钥获取
+        </p>
+        <input type="text" x-model="newKey" placeholder="eyJhbGciOi..."
+               class="input t-mono" />
+        <p class="t-faint mt-3" style="font-size: 11px;">保存在本项目 config.json 文件里，不会上传任何服务器</p>
+      </div>
+      <div class="modal-ft">
+        <button @click="showKeyModal = false" class="btn">取消</button>
+        <button @click="saveKey" class="btn btn-primary">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/modals.js"></script>
+  <script src="/static/project-app.js"></script>
+</body>
+</html>
