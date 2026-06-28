@@ -1,14 +1,28 @@
-import type { Project } from "@/lib/types";
 "use client";
 import { useState } from "react";
 import { modal } from "@/components/Modal";
 
+interface Storyboard {
+  id: string;
+  selected: string;
+  video_file: string;
+  video_status: string;
+  duration: number;
+}
+
+interface Project {
+  id: string;
+  storyboards: Storyboard[];
+}
 
 export default function StepExport({ project }: { project: Project }) {
   const [rendering, setRendering] = useState(false);
   const [composing, setComposing] = useState(false);
   const [transition, setTransition] = useState("fade");
   const [transitionDur, setTransitionDur] = useState(0.5);
+  const [finalVideo, setFinalVideo] = useState<string | null>(null);
+  const [gridBundle, setGridBundle] = useState<any | null>(null);
+  const [polling, setPolling] = useState(false);
 
   const readyCount = project.storyboards.filter((s) => s.video_file).length;
   const selectedCount = project.storyboards.filter((s) => s.selected).length;
@@ -16,6 +30,10 @@ export default function StepExport({ project }: { project: Project }) {
   async function stitch() {
     if (selectedCount === 0) {
       await modal.alert("请先为分镜选定候选图", { title: "提示" });
+      return;
+    }
+    if (readyCount === 0) {
+      await modal.alert("请先渲染分镜视频（步骤 3 → 🎬 渲染视频）", { title: "提示" });
       return;
     }
     setRendering(true);
@@ -27,6 +45,7 @@ export default function StepExport({ project }: { project: Project }) {
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.detail || "拼接失败");
+      setFinalVideo(`/api/projects/${project.id}/output`);
       await modal.alert("成片已生成！", { title: "成功" });
     } catch (e: any) {
       await modal.alert("拼接失败：" + e.message, { title: "出错了", danger: true });
@@ -53,6 +72,7 @@ export default function StepExport({ project }: { project: Project }) {
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.detail || "合成失败");
+      setGridBundle(d.bundle);
       await modal.alert(`九宫格已合成（${d.bundle?.panel_count || 9} 格）`, { title: "完成" });
     } catch (e: any) {
       await modal.alert("九宫格合并失败：" + e.message, { title: "出错了", danger: true });
@@ -63,6 +83,7 @@ export default function StepExport({ project }: { project: Project }) {
 
   return (
     <div className="space-y-4">
+      {/* 拼接成片 */}
       <div className="bg-white rounded-xl border border-[var(--color-line)] p-5">
         <h2 className="font-semibold text-sm mb-3 flex items-center gap-2">🎞️ 自动拼接成片</h2>
         <p className="text-xs text-[var(--color-ink-3)] mb-4">把已渲染的分镜视频按转场拼接为完整短片。需要 ffmpeg + ffprobe。</p>
@@ -89,22 +110,43 @@ export default function StepExport({ project }: { project: Project }) {
           )}
         </div>
         <div className="text-xs text-[var(--color-ink-3)] mb-3">
-          已就绪 {readyCount} / {project.storyboards.length} 个分镜视频
+          已就绪 <span className="font-mono font-semibold text-[var(--color-success)]">{readyCount}</span> / {project.storyboards.length} 个分镜视频
         </div>
         <button onClick={stitch} disabled={rendering || readyCount === 0} className="px-4 py-2 text-sm rounded-md bg-[var(--color-brand)] text-white disabled:opacity-50">
           {rendering ? "拼接中…" : "🎬 开始拼接成片"}
         </button>
+
+        {finalVideo && (
+          <div className="mt-4 pt-4 border-t border-[var(--color-line)]">
+            <div className="text-sm font-semibold mb-2">✅ 成片</div>
+            <video src={finalVideo} controls className="w-full rounded-md aspect-video bg-black" />
+            <a href={finalVideo} download={`project-${project.id}.mp4`} className="inline-block mt-2 px-3 py-1.5 text-xs rounded-md border border-[var(--color-line)] hover:bg-[var(--color-bg-soft)]">
+              ⬇ 下载成片
+            </a>
+          </div>
+        )}
       </div>
 
+      {/* 九宫格 */}
       <div className="bg-white rounded-xl border border-[var(--color-line)] p-5">
         <h2 className="font-semibold text-sm mb-3 flex items-center gap-2">🎞️ 九宫格合并</h2>
         <p className="text-xs text-[var(--color-ink-3)] mb-4">把已选候选图的分镜合成 3×3 大图，发一次视频即可展示所有分镜（自动选 9 宫格）。</p>
         <div className="text-xs text-[var(--color-ink-3)] mb-3">
-          已选图 {selectedCount} / {project.storyboards.length} 个分镜
+          已选图 <span className="font-mono font-semibold">{selectedCount}</span> / {project.storyboards.length} 个分镜
         </div>
         <button onClick={compositeGrid} disabled={composing || selectedCount === 0} className="px-4 py-2 text-sm rounded-md border border-[var(--color-line)] hover:bg-[var(--color-bg-soft)] disabled:opacity-50">
           {composing ? "合成中…" : "🧩 合成九宫格"}
         </button>
+
+        {gridBundle && (
+          <div className="mt-4 pt-4 border-t border-[var(--color-line)]">
+            <div className="text-sm font-semibold mb-2">✅ 九宫格（{gridBundle.panel_count} 格）</div>
+            <img src={`/api/projects/${project.id}/grid-image?path=${encodeURIComponent(gridBundle.grid_image)}`} alt="九宫格" className="w-full rounded-md border border-[var(--color-line)]" />
+            <div className="text-xs text-[var(--color-ink-3)] mt-2">
+              分辨率：{gridBundle.resolution} · 时长：{gridBundle.duration}s · task_id：<span className="font-mono">{gridBundle.video_task_id?.slice(0, 8)}</span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

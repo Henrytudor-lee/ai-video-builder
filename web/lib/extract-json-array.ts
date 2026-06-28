@@ -5,101 +5,106 @@
  *   - ```json ... ``` 围栏
  *   - 字符串里未转义的控制字符（直接报 raw_decode 错）
  *   - 字符串里未转义的英文双引号（state machine 识别）
+ *
+ * 启发式：英文双引号若后面紧跟 JSON 结构字符（: , ] }）或空白+结构字符 → 边界
+ *      否则 → 嵌入引号，escape 为 \"
  */
 
 export function extractJsonArray(raw: string): any[] {
   let text = (raw || "").trim();
 
-  // 1. 去 <think>...</think>（包含跨行）
-  text = text.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
+  // 1. 去 ``` 围栏
+  if (text.startsWith("```")) {
+    const lines = text.split("\n");
+    if (lines[0].startsWith("```")) lines.shift();
+    if (lines.length && lines[lines.length - 1].trim() === "```") lines.pop();
+    text = lines.join("\n").trim();
+  }
 
-  // 2. 找第一个 [ 与最后一个匹配的 ]
+  // 2. 去 <think>...</think>（包含跨行）
+  text = text.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
+  if (text.includes("<think>")) {
+    const idx = text.indexOf("[");
+    if (idx >= 0) text = text.slice(idx);
+  }
+
+  // 3. 找第一个 [ 与最后一个 ]（用括号配对）
   const start = text.indexOf("[");
   if (start < 0) throw new Error("response does not contain a JSON array");
-  let depth = 0;
-  let end = -1;
-  let inStr = false;
-  let escape = false;
-  for (let i = start; i < text.length; i++) {
-    const ch = text[i];
-    if (inStr) {
-      if (escape) { escape = false; continue; }
-      if (ch === "\\") { escape = true; continue; }
-      if (ch === '"') inStr = false;
-    } else {
-      if (ch === '"') inStr = true;
-      else if (ch === "[") depth++;
-      else if (ch === "]") { depth--; if (depth === 0) { end = i; break; } }
-    }
-  }
-  if (end < 0) throw new Error("unbalanced brackets in response");
+  const end = text.lastIndexOf("]");
+  if (end < start) throw new Error("unbalanced brackets in response");
   let arrayText = text.slice(start, end + 1);
 
-  // 3. 先尝试严格解析
+  // 4. 先尝试严格解析
   try {
     return JSON.parse(arrayText);
   } catch {
-    // 4. 失败 → 启发式修复：转义未转义控制字符 + 未转义英文引号
-    arrayText = escapeUnescapedControlChars(arrayText);
-    arrayText = escapeUnescapedQuotes(arrayText);
+    // 5. 失败 → 启发式修复：一次扫描同时 escape 嵌入引号和控制字符
+    arrayText = fixDirtyJson(arrayText);
     return JSON.parse(arrayText);
   }
 }
 
-/** 字符串字面量内的控制字符 → \\n \\t \\r */
-function escapeUnescapedControlChars(s: string): string {
-  let out = "";
-  let inStr = false;
-  let escape = false;
-  for (let i = 0; i < s.length; i++) {
-    const ch = s[i];
-    const code = ch.charCodeAt(0);
-    if (inStr) {
-      if (escape) { out += ch; escape = false; continue; }
-      if (ch === "\\") { out += ch; escape = true; continue; }
-      if (ch === '"') { inStr = false; out += ch; continue; }
-      if (code === 0x0a) { out += "\\n"; continue; }
-      if (code === 0x0d) { out += "\\r"; continue; }
-      if (code === 0x09) { out += "\\t"; continue; }
-      if (code < 0x20) { out += `\\u${code.toString(16).padStart(4, "0")}`; continue; }
-      out += ch;
-    } else {
-      if (ch === '"') inStr = true;
-      out += ch;
-    }
-  }
-  return out;
+const _WS = " \t\r\n";
+const _DQ = '"';
+const _BS = "\\";
+const _STRUCTURAL = ":,]}";
+
+/** 跳过空白后看下一个非空白字符；返回下标或 -1（EOF） */
+function peekNonSpace(s: string, i: number): number {
+  let k = i + 1;
+  while (k < s.length && _WS.includes(s[k])) k++;
+  return k < s.length ? k : -1;
+}
+
+function isClosingQuote(s: string, i: number): boolean {
+  const k = peekNonSpace(s, i);
+  return k === -1 || _STRUCTURAL.includes(s[k]);
 }
 
 /**
- * 字符串字面量内的未转义英文引号 → \"
- * 关键洞察：真正的字符串边界引号后面一定跟 JSON 结构字符（, ] } : 空白 / EOF）
- * 而内容里的引号后面大概率是中文字符 / 标点。
+ * 一次扫描：识别字符串边界 / 嵌入引号 escape / 控制字符 escape
+ * （与 Python 版本 server.py 的 extract_json_array 行为一致）
  */
-function escapeUnescapedQuotes(s: string): string {
+function fixDirtyJson(text: string): string {
   let out = "";
   let inStr = false;
   let escape = false;
-  for (let i = 0; i < s.length; i++) {
-    const ch = s[i];
-    if (inStr) {
-      if (escape) { out += ch; escape = false; continue; }
-      if (ch === "\\") { out += ch; escape = true; continue; }
-      if (ch === '"') {
-        // 判断这是边界还是嵌入引号
-        const next = s[i + 1];
-        const isBoundary = next === undefined || /[\s,\]\}:]/.test(next);
-        if (isBoundary) {
-          inStr = false;
-          out += ch;
-        } else {
-          out += '\\"';
-        }
-      } else {
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (escape) {
+      out += ch;
+      escape = false;
+      continue;
+    }
+    if (ch === _BS) {
+      out += ch;
+      escape = true;
+      continue;
+    }
+    if (ch === _DQ) {
+      if (!inStr) {
         out += ch;
+        inStr = true;
+        continue;
       }
+      // 在字符串内：判断是 boundary 还是嵌入引号
+      if (isClosingQuote(text, i)) {
+        out += ch;
+        inStr = false;
+      } else {
+        out += _BS + _DQ;
+      }
+      continue;
+    }
+    if (inStr) {
+      const code = ch.charCodeAt(0);
+      if (ch === "\n") out += _BS + "n";
+      else if (ch === "\r") out += _BS + "r";
+      else if (ch === "\t") out += _BS + "t";
+      else if (code < 0x20) out += _BS + "u" + code.toString(16).padStart(4, "0");
+      else out += ch;
     } else {
-      if (ch === '"') inStr = true;
       out += ch;
     }
   }

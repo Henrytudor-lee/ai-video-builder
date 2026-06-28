@@ -186,3 +186,7 @@ export async function batchDeleteProjects(ids: string[]): Promise<{ deleted: str
   return { deleted, missing, errors };
 }
 
+
+export function gridBundlesDir(pid: string) {
+  return path.join(projectDir(pid), "grid_bundles");
+}

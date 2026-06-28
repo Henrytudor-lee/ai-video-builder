@@ -1,4 +1,4 @@
-import type { Project } from "@/lib/types";
+import type { Project, Character } from "@/lib/types";
 "use client";
 import { useState, useEffect } from "react";
 import ModalRoot from "@/components/Modal";
@@ -10,6 +10,8 @@ import StepStoryboards from "@/components/project/StepStoryboards";
 import StepExport from "@/components/project/StepExport";
 import BrainstormModal from "@/components/project/BrainstormModal";
 import Lightbox from "@/components/Lightbox";
+import RewriteModal from "@/components/project/RewriteModal";
+import type { LightboxState } from "@/components/Lightbox";
 import { modal } from "@/components/Modal";
 
 
@@ -18,10 +20,21 @@ export default function ProjectPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [config, setConfig] = useState<{ has_key: boolean; ffmpeg_available: boolean } | null>(null);
   const [showBrainstorm, setShowBrainstorm] = useState(false);
-  const [lightbox, setLightbox] = useState<any>(null);
+  const [lightbox, setLightbox] = useState<LightboxState>(null);
+  const [rewriteChar, setRewriteChar] = useState<Character | null>(null);
 
   useEffect(() => {
     fetch("/api/config").then((r) => r.json()).then(setConfig);
+  }, []);
+
+  // 灯箱内分镜上下切换（来自 Lightbox 自定义事件）
+  useEffect(() => {
+    const onSbChange = (e: Event) => {
+      const { sbId, idx } = (e as CustomEvent).detail;
+      setLightbox((prev) => prev?.kind === "sb" ? { ...prev, sbId, idx } : prev);
+    };
+    window.addEventListener("lightbox-sb-change", onSbChange);
+    return () => window.removeEventListener("lightbox-sb-change", onSbChange);
   }, []);
 
   async function openProject(id: string) {
@@ -36,6 +49,31 @@ export default function ProjectPage() {
   function closeProject() {
     setCurrentProject(null);
     setCurrentStep(1);
+  }
+
+  async function applyRewrite(newDesc: string) {
+    if (!rewriteChar || !currentProject) return;
+    const r = await fetch(`/api/projects/${currentProject.id}/characters/${rewriteChar.id}/select`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      // 没有专用"更新描述"端点，用 PUT 替代：复用 characters 路由的描述更新
+    });
+    // 改：直接 PUT 到 characters
+    // 但我们没单独的更新端点，加一个 /api/projects/[pid]/characters/[cid] PUT
+    // 简单方案：直接改 project.characters
+    const updated = currentProject.characters.map((c: Character) =>
+      c.id === rewriteChar.id ? { ...c, description: newDesc } : c
+    );
+    setCurrentProject({ ...currentProject, characters: updated });
+    // 持久化：调一个新端点 /api/projects/[pid]/characters/[cid] PUT {description}
+    const saveR = await fetch(`/api/projects/${currentProject.id}/characters/${rewriteChar.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ description: newDesc }),
+    });
+    if (!saveR.ok) {
+      await modal.alert("保存失败", { title: "出错了", danger: true });
+    }
   }
 
   async function updateProject(p: Project) {
@@ -154,14 +192,17 @@ export default function ProjectPage() {
             project={currentProject}
             onUpdate={updateProject}
             onOpenLightbox={(opts) => setLightbox(opts)}
-            onOpenRewrite={(cid) => modal.alert("改写功能待实现", { title: "TODO" })}
+            onOpenRewrite={(cid) => {
+            const c = currentProject.characters.find((x: any) => x.id === cid);
+            if (c) setRewriteChar(c);
+          }}
           />
         )}
         {currentStep === 3 && (
           <StepStoryboards
             project={currentProject}
             onUpdate={updateProject}
-            onOpenLightbox={(opts) => setLightbox({ ...opts, pid: currentProject.id, allSb: currentProject.storyboards })}
+            onOpenLightbox={(opts) => setLightbox({ ...opts, pid: currentProject.id, allSb: currentProject.storyboards.map((s: any) => ({ id: s.id, name: s.name, candidates: s.candidates || [], selected: s.selected || "" })) } as LightboxState)}
           />
         )}
         {currentStep === 4 && <StepExport project={currentProject} />}
@@ -173,6 +214,18 @@ export default function ProjectPage() {
           aspectRatio={currentProject.aspect_ratio}
           onClose={() => setShowBrainstorm(false)}
           onApply={applyBrainstormIdea}
+        />
+      )}
+
+      {rewriteChar && currentProject && (
+        <RewriteModal
+          pid={currentProject.id}
+          cid={rewriteChar.id}
+          characterName={rewriteChar.name}
+          currentDescription={rewriteChar.description}
+          scriptContext={currentProject.script || ""}
+          onClose={() => setRewriteChar(null)}
+          onApply={applyRewrite}
         />
       )}
 
